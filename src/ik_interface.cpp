@@ -40,6 +40,19 @@ bool IKFastPR2::ikAllSoln(const KDL::Frame& wrist_frame, double free_angle,
     for (int i=0; i < ROT_DATA_SIZE; i++){
         eerot[i] = OR_tool_frame.M.data[i];
     }
+
+    printf("\n%f %f %f\n%f %f %f\n%f %f %f\n",
+            eerot[0],
+            eerot[1],
+            eerot[2],
+            eerot[3],
+            eerot[4],
+            eerot[5],
+            eerot[6],
+            eerot[7],
+            eerot[8]);
+
+
     IkSolutionList<IkReal> solutions;
     std::vector<IkReal> vfree(GetNumFreeParameters(), free_angle);
     bool success = ik_pr2_rightarm::ComputeIk(eetrans, eerot, vfree.size() > 0 ? &vfree[0] : NULL, solutions);
@@ -106,6 +119,16 @@ KDL::Frame IKFastPR2::getKDLObjectState(const vector<double> arm_angles){
                       eerot[3], eerot[4], eerot[5],
                       eerot[6], eerot[7], eerot[8]);
 
+    printf("\n%f %f %f\n%f %f %f\n%f %f %f\n",
+            eerot[0],
+            eerot[1],
+            eerot[2],
+            eerot[3],
+            eerot[4],
+            eerot[5],
+            eerot[6],
+            eerot[7],
+            eerot[8]);
     KDL::Frame wrist_frame = KDL::Frame(rot, kdl_v)*OR_offset;
     double roll, pitch, yaw;
     wrist_frame.M.GetRPY(roll, pitch, yaw);
