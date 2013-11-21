@@ -60,14 +60,18 @@ void run_ik(const sensor_msgs::JointState& msg){
     assert(fabs(yaw-obj.yaw) < .0001);
 
     std::vector<double> ik_angles;
-    ik_solver.ik(wrist_frame, msg.position[17], &ik_angles);
-    assert(fabs(ik_angles[0]-msg.position[18]) < .0001);
-    assert(fabs(ik_angles[1]-msg.position[19]) < .0001);
-    assert(fabs(ik_angles[2]-msg.position[17]) < .0001);
-    assert(fabs(ik_angles[3]-msg.position[21]) < .0001);
-    assert(fabs(ik_angles[4]-msg.position[20]) < .0001);
-    assert(fabs(ik_angles[5]-msg.position[22]) < .0001);
-    assert(fabs(ik_angles[6]-msg.position[23]) < .0001);
+    if (ik_solver.ik(wrist_frame, msg.position[17], &ik_angles)){
+        ROS_INFO("ik succeeded");
+        assert(fabs(ik_angles[0]-msg.position[18]) < .0001);
+        assert(fabs(ik_angles[1]-msg.position[19]) < .0001);
+        assert(fabs(ik_angles[2]-msg.position[17]) < .0001);
+        assert(fabs(ik_angles[3]-msg.position[21]) < .0001);
+        assert(fabs(ik_angles[4]-msg.position[20]) < .0001);
+        assert(fabs(ik_angles[5]-msg.position[22]) < .0001);
+        assert(fabs(ik_angles[6]-msg.position[23]) < .0001);
+    } else {
+        ROS_INFO("ik failed!");
+    }
 }
 int main(int argc, char** argv){
     ros::init(argc, argv, "arm_test");
