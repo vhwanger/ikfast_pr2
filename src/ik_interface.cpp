@@ -76,12 +76,12 @@ KDL::Frame IKFastPR2::getKDLObjectState(const vector<double> arm_angles){
     KDL::Rotation rot(eerot[0], eerot[1], eerot[2],
                       eerot[3], eerot[4], eerot[5],
                       eerot[6], eerot[7], eerot[8]);
-    KDL::Rotation offset(0, 0, 1,
-                         0, 1, 0,
-                         -1, 0, 0);
-    KDL::Rotation new_rot = rot*offset;
+    //KDL::Rotation offset(0, 0, 1,
+    //                     0, 1, 0,
+    //                     -1, 0, 0);
+    //KDL::Rotation new_rot = rot*offset;
 
-    return KDL::Frame(new_rot, kdl_v);
+    return KDL::Frame(rot, kdl_v);
 }
 
 ObjectState IKFastPR2::getRightArmObjectState(const vector<double> arm_angles){
