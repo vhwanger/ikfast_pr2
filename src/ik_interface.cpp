@@ -25,6 +25,11 @@ IKFastPR2::IKFastPR2(){
 bool IKFastPR2::ikAllSoln(const KDL::Frame& wrist_frame, double free_angle,
                           std::vector<std::vector<double> >* soln_list){
     Frame OR_tool_frame = wrist_frame*OR_offset.Inverse();
+    double roll, pitch, yaw;
+    OR_tool_frame.M.GetRPY(roll, pitch, yaw);
+    printf("ikAllSoln frame: %f %f %f (%f %f %f)",
+            OR_tool_frame.p.x(), OR_tool_frame.p.y(),
+            OR_tool_frame.p.z(), roll, pitch, yaw);
     
     IkReal eerot[ROT_DATA_SIZE], eetrans[3];
     eetrans[0] = OR_tool_frame.p.x();
