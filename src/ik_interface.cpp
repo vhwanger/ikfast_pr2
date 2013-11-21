@@ -48,7 +48,6 @@ bool IKFastPR2::ikAllSoln(const KDL::Frame& wrist_frame, double free_angle,
         sol.GetSolution(&solvalues[0],vsolfree.size()>0?&vsolfree[0]:NULL);
         for( std::size_t j = 0; j < solvalues.size(); ++j){
             soln.push_back(solvalues[j]);
-            printf("%f ", solvalues[j]);
         }
         printf("\n");
         if (soln[0] > -.564602 && soln[0] < 2.135398 &&
@@ -57,6 +56,9 @@ bool IKFastPR2::ikAllSoln(const KDL::Frame& wrist_frame, double free_angle,
             soln[3] > -2.1213 && soln[3] < -.15 &&
             soln[5] > -2 && soln[5] < -.1){
             soln_list->push_back(soln);
+            for( std::size_t j = 0; j < solvalues.size(); ++j){
+                printf("%f ", solvalues[j]);
+            }
         }
     }
     if (!soln_list->size()){
