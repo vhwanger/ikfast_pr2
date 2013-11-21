@@ -104,7 +104,14 @@ KDL::Frame IKFastPR2::getKDLObjectState(const vector<double> arm_angles){
                       eerot[3], eerot[4], eerot[5],
                       eerot[6], eerot[7], eerot[8]);
 
-    return KDL::Frame(rot, kdl_v)*OR_offset;
+    KDL::Frame wrist_frame = KDL::Frame(rot, kdl_v)*OR_offset;
+    double roll, pitch, yaw;
+    wrist_frame.M.GetRPY(roll, pitch, yaw);
+    printf("openrave object frame in fk %f %f %f (%f %f %f)",
+            wrist_frame.p.x(), wrist_frame.p.y(), wrist_frame.p.z(),
+            roll, pitch, yaw);
+
+    return wrist_frame;
 }
 
 ObjectState IKFastPR2::getRightArmObjectState(const vector<double> arm_angles){
