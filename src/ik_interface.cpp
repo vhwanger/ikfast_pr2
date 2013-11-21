@@ -22,11 +22,8 @@ IKFastPR2::IKFastPR2(){
     KDL::Vector v(0, 0, -.18);
     OR_offset = KDL::Frame(rot, v);
 }
-bool IKFastPR2::ikAllSoln(const ObjectState& obj_pose, double free_angle,
+bool IKFastPR2::ikAllSoln(const KDL::Frame& wrist_frame, double free_angle,
                           std::vector<std::vector<double> >* soln_list){
-    Rotation rot = Rotation::RPY(obj_pose.roll, obj_pose.pitch, obj_pose.yaw);
-    Vector v(obj_pose.x, obj_pose.y, obj_pose.z);
-    Frame wrist_frame(rot, v);
     Frame OR_tool_frame = wrist_frame*OR_offset.Inverse();
     
     IkReal eerot[ROT_DATA_SIZE], eetrans[3];
@@ -68,8 +65,21 @@ bool IKFastPR2::ikAllSoln(const ObjectState& obj_pose, double free_angle,
     return true;
 }
 bool IKFastPR2::ik(const ObjectState& obj_pose, double free_angle, vector<double>* angles){
+    KDL::Vector v(obj_pose.x, obj_pose.y, obj_pose.z);
+    KDL::Rotation rot = KDL::Rotation::RPY(obj_pose.roll, obj_pose.pitch, obj_pose.yaw);
+    KDL::Frame wrist_frame(rot, v);
     std::vector<std::vector<double> > all_soln;
-    if (ikAllSoln(obj_pose, free_angle, &all_soln)){
+    if (ikAllSoln(wrist_frame, free_angle, &all_soln)){
+        *angles = all_soln[0];
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool IKFastPR2::ik(const Frame& wrist_frame, double free_angle, vector<double>* angles){
+    std::vector<std::vector<double> > all_soln;
+    if (ikAllSoln(wrist_frame, free_angle, &all_soln)){
         *angles = all_soln[0];
         return true;
     } else {
@@ -91,21 +101,11 @@ KDL::Frame IKFastPR2::getKDLObjectState(const vector<double> arm_angles){
 }
 
 ObjectState IKFastPR2::getRightArmObjectState(const vector<double> arm_angles){
-    vector<ik_pr2_rightarm::IkReal> IkReal_angles(arm_angles.begin(), arm_angles.end());
-    ik_pr2_rightarm::IkReal eetrans[3], eerot[ROT_DATA_SIZE];
-    ik_pr2_rightarm::ComputeFk(&IkReal_angles[0], eetrans, eerot);
-    
-    KDL::Rotation rot(eerot[0], eerot[1], eerot[2],
-                      eerot[3], eerot[4], eerot[5],
-                      eerot[6], eerot[7], eerot[8]);
-    double testr, testp, testy;
-    rot.GetRPY(testr, testp, testy);
-    //printf("before adjust rpy: %f %f %f %f %f %f\n", eetrans[0], eetrans[1], eetrans[2], testr, testp, testy);
-
-    ObjectState obj_pose;
-    obj_pose.x = eetrans[0];
-    obj_pose.y = eetrans[1];
-    obj_pose.z = eetrans[2];
-    rot.GetRPY(obj_pose.roll, obj_pose.pitch, obj_pose.yaw);
-    return obj_pose;
+    KDL::Frame frame = getKDLObjectState(arm_angles);
+    ObjectState obj;
+    obj.x = frame.p.x();
+    obj.y = frame.p.y();
+    obj.z = frame.p.z();
+    frame.M.GetRPY(obj.roll, obj.pitch, obj.yaw);
+    return obj;
 }
