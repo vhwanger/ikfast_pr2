@@ -30,7 +30,6 @@ bool IKFastPR2::ikAllSoln(const KDL::Frame& wrist_frame, double free_angle,
     printf("ikAllSoln frame: %f %f %f (%f %f %f)",
             OR_tool_frame.p.x(), OR_tool_frame.p.y(),
             OR_tool_frame.p.z(), roll, pitch, yaw);
-    printf("\nfree angle: %f", free_angle);
     
     IkReal eerot[ROT_DATA_SIZE], eetrans[3];
     eetrans[0] = OR_tool_frame.p.x();
@@ -41,6 +40,7 @@ bool IKFastPR2::ikAllSoln(const KDL::Frame& wrist_frame, double free_angle,
         eerot[i] = OR_tool_frame.M.data[i];
     }
 
+    printf("\nfree angle: %f\n", free_angle);
     printf("\n%f %f %f", eetrans[0], eetrans[1], eetrans[2]);
     printf("\n%f %f %f\n%f %f %f\n%f %f %f\n",
             eerot[0],
@@ -120,6 +120,7 @@ KDL::Frame IKFastPR2::getKDLObjectState(const vector<double> arm_angles){
                       eerot[3], eerot[4], eerot[5],
                       eerot[6], eerot[7], eerot[8]);
 
+    printf("free ange: %f\n", arm_angles[UPPER_ARM_ROLL]);
     printf("\n%f %f %f", eetrans[0], eetrans[1], eetrans[2]);
     printf("\n%f %f %f\n%f %f %f\n%f %f %f\n",
             eerot[0],
