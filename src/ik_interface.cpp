@@ -15,13 +15,24 @@ using namespace ik_pr2_rightarm;
 
 //min_joint_limits:  -0.564602 -0.353600 -0.6500 -2.121300 0 -2.0 0
 //max_joint_limits:   2.135398  1.296300  3.7500 -0.15000  0 -0.1 0
-
 IKFastPR2::IKFastPR2(){
     KDL::Rotation rot = KDL::Rotation::Quaternion(0, -pow(2,.5)/2, 0, pow(2,.5)/2);
     //KDL::Rotation rot = KDL::Rotation::Quaternion(0, 1, 0, 0);
     KDL::Vector v(0, 0, -.18);
     OR_offset = KDL::Frame(rot, v);
 }
+
+double normalizeFreeAngle(double value){
+    double rotation = 2*M_PI;
+    while (value < -.65){
+        value += rotation;
+    }
+    while (value > 3.75){
+        value -= rotation;
+    }
+    return value;
+}
+
 bool IKFastPR2::ikAllSoln(const KDL::Frame& wrist_frame, double free_angle,
                           std::vector<std::vector<double> >* soln_list){
     Frame OR_tool_frame = wrist_frame*OR_offset.Inverse();
@@ -68,18 +79,19 @@ bool IKFastPR2::ikAllSoln(const KDL::Frame& wrist_frame, double free_angle,
         sol.GetSolution(&solvalues[0],vsolfree.size()>0?&vsolfree[0]:NULL);
         for( std::size_t j = 0; j < solvalues.size(); ++j){
             soln.push_back(solvalues[j]);
+            printf("%f ", solvalues[j]);
         }
         printf("\n");
-        if (soln[0] > -.564602 && soln[0] < 2.135398 &&
-            soln[1] > -.3536 && soln[1] < 1.2963 &&
-            //soln[2] > -.65 && soln[2] < 3.75 &&
-            soln[3] > -2.1213 && soln[3] < -.15 &&
-            soln[5] > -2 && soln[5] < -.1){
+        //if (soln[0] > -.564602 && soln[0] < 2.135398 &&
+        //    soln[1] > -.3536 && soln[1] < 1.2963 &&
+        //    soln[2] > -.65 && soln[2] < 3.75 &&
+        //    soln[3] > -2.1213 && soln[3] < -.15 &&
+        //    soln[5] > -2 && soln[5] < -.1){
             soln_list->push_back(soln);
             for( std::size_t j = 0; j < solvalues.size(); ++j){
                 printf("%f ", solvalues[j]);
             }
-        }
+        //}
     }
     if (!soln_list->size()){
         return false;

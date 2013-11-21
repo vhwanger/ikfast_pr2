@@ -7,6 +7,7 @@
 #include <kdl/frames.hpp>
 #include <pviz/pviz.h>
 #include <tf_conversions/tf_kdl.h>
+#include <angles/angles.h>
 
 
 void run_ik(const sensor_msgs::JointState& msg){
@@ -22,13 +23,13 @@ void run_ik(const sensor_msgs::JointState& msg){
     angles.push_back(msg.position[22]);
     angles.push_back(msg.position[23]);
     ROS_INFO("angles %f\n%f\n%f\n%f\n%f\n%f\n%f",
-              msg.position[18],
-              msg.position[19],
-              msg.position[17],
-              msg.position[21],
-              msg.position[20],
-              msg.position[22],
-              msg.position[23]);
+              angles::normalize_angle(msg.position[18]),
+              angles::normalize_angle(msg.position[19]),
+              angles::normalize_angle(msg.position[17]),
+              angles::normalize_angle(msg.position[21]),
+              angles::normalize_angle(msg.position[20]),
+              angles::normalize_angle(msg.position[22]),
+              angles::normalize_angle(msg.position[23]));
     IKFastPR2 ik_solver;
     KDL::Frame obj_frame;
     obj_frame = ik_solver.getKDLObjectState(angles);
@@ -75,6 +76,9 @@ void run_ik(const sensor_msgs::JointState& msg){
         assert(fabs(pitch2-pitch) < .0001);
         assert(fabs(yaw2-yaw) < .0001);
         ROS_INFO("test succeeded!");
+        BodyPose bp;
+        bp.x = 0; bp.y = 0; bp.z = 0; bp.theta = 0;
+        pviz.visualizeRobot(ik_angles, ik_angles, bp, 150, "blah", 0);
     } else {
         ROS_INFO("ik failed");
     }

@@ -13,6 +13,7 @@
   <depend package="pviz" />
   <depend package="roscpp" />
   <depend package="actionlib" />
+  <depend package="angles" />
   <depend package="pr2_controllers_msgs" />
   <depend package="sensor_msgs" />
   <depend package="tf" />
