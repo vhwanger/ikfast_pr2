@@ -24,7 +24,7 @@ IKFastPR2::IKFastPR2(){
 }
 bool IKFastPR2::ikAllSoln(const KDL::Frame& wrist_frame, double free_angle,
                           std::vector<std::vector<double> >* soln_list){
-    Frame OR_tool_frame = OR_offset.Inverse()*wrist_frame;
+    Frame OR_tool_frame = wrist_frame*OR_offset.Inverse();
     double roll, pitch, yaw;
     OR_tool_frame.M.GetRPY(roll, pitch, yaw);
     printf("ikAllSoln frame: %f %f %f (%f %f %f)",
@@ -110,6 +110,10 @@ KDL::Frame IKFastPR2::getKDLObjectState(const vector<double> arm_angles){
     printf("openrave object frame in fk %f %f %f (%f %f %f)",
             wrist_frame.p.x(), wrist_frame.p.y(), wrist_frame.p.z(),
             roll, pitch, yaw);
+    Frame test = wrist_frame * OR_offset.Inverse();
+    test.M.GetRPY(roll, pitch, yaw);
+    printf("test %f %f %f (%f %f %f)",
+            test.p.x(), test.p.y(), test.p.z(), roll, pitch, yaw);
 
     return wrist_frame;
 }
