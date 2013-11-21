@@ -52,9 +52,9 @@ void run_ik(const sensor_msgs::JointState& msg){
     double roll, pitch, yaw;
     ROS_INFO("wrist frame %f %f %f", wrist_frame.p.x(), wrist_frame.p.y(), wrist_frame.p.z());
     wrist_frame.M.GetRPY(roll, pitch, yaw);
-    assert(fabs(wrist_frame.p.x()-obj.x) < .0001);
-    assert(fabs(wrist_frame.p.y()-obj.y) < .0001);
-    assert(fabs(wrist_frame.p.z()-obj.z) < .0001);
+    assert(fabs(wrist_frame.p.x()-obj.x) < .001);
+    assert(fabs(wrist_frame.p.y()-obj.y) < .001);
+    assert(fabs(wrist_frame.p.z()-obj.z) < .001);
     assert(fabs(roll-obj.roll) < .0001);
     assert(fabs(pitch-obj.pitch) < .0001);
     assert(fabs(yaw-obj.yaw) < .0001);
@@ -62,13 +62,13 @@ void run_ik(const sensor_msgs::JointState& msg){
     std::vector<double> ik_angles;
     if (ik_solver.ik(wrist_frame, msg.position[17], &ik_angles)){
         ROS_INFO("ik succeeded");
-        assert(fabs(ik_angles[0]-msg.position[18]) < .0001);
-        assert(fabs(ik_angles[1]-msg.position[19]) < .0001);
-        assert(fabs(ik_angles[2]-msg.position[17]) < .0001);
-        assert(fabs(ik_angles[3]-msg.position[21]) < .0001);
-        assert(fabs(ik_angles[4]-msg.position[20]) < .0001);
-        assert(fabs(ik_angles[5]-msg.position[22]) < .0001);
-        assert(fabs(ik_angles[6]-msg.position[23]) < .0001);
+        assert(fabs(ik_angles[0]-msg.position[18]) < .001);
+        assert(fabs(ik_angles[1]-msg.position[19]) < .001);
+        assert(fabs(ik_angles[2]-msg.position[17]) < .001);
+        assert(fabs(ik_angles[3]-msg.position[21]) < .001);
+        assert(fabs(ik_angles[4]-msg.position[20]) < .001);
+        assert(fabs(ik_angles[5]-msg.position[22]) < .001);
+        assert(fabs(ik_angles[6]-msg.position[23]) < .001);
     } else {
         ROS_INFO("ik failed!");
     }
