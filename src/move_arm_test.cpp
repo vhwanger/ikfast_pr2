@@ -74,6 +74,9 @@ void run_ik(const sensor_msgs::JointState& msg){
         assert(fabs(roll2-roll) < .0001);
         assert(fabs(pitch2-pitch) < .0001);
         assert(fabs(yaw2-yaw) < .0001);
+        ROS_INFO("test succeeded!");
+    } else {
+        ROS_INFO("ik failed");
     }
 }
 int main(int argc, char** argv){

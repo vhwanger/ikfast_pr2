@@ -27,9 +27,6 @@ bool IKFastPR2::ikAllSoln(const KDL::Frame& wrist_frame, double free_angle,
     Frame OR_tool_frame = wrist_frame*OR_offset.Inverse();
     double roll, pitch, yaw;
     OR_tool_frame.M.GetRPY(roll, pitch, yaw);
-    printf("ikAllSoln frame: %f %f %f (%f %f %f)",
-            OR_tool_frame.p.x(), OR_tool_frame.p.y(),
-            OR_tool_frame.p.z(), roll, pitch, yaw);
     
     IkReal eerot[ROT_DATA_SIZE], eetrans[3];
     eetrans[0] = OR_tool_frame.p.x();
@@ -39,20 +36,6 @@ bool IKFastPR2::ikAllSoln(const KDL::Frame& wrist_frame, double free_angle,
     for (int i=0; i < ROT_DATA_SIZE; i++){
         eerot[i] = OR_tool_frame.M.data[i];
     }
-
-    printf("\nfree angle: %f\n", free_angle);
-    printf("\n%f %f %f", eetrans[0], eetrans[1], eetrans[2]);
-    printf("\n%f %f %f\n%f %f %f\n%f %f %f\n",
-            eerot[0],
-            eerot[1],
-            eerot[2],
-            eerot[3],
-            eerot[4],
-            eerot[5],
-            eerot[6],
-            eerot[7],
-            eerot[8]);
-
 
     IkSolutionList<IkReal> solutions;
     std::vector<IkReal> vfree(GetNumFreeParameters(), free_angle);
@@ -68,18 +51,13 @@ bool IKFastPR2::ikAllSoln(const KDL::Frame& wrist_frame, double free_angle,
         sol.GetSolution(&solvalues[0],vsolfree.size()>0?&vsolfree[0]:NULL);
         for( std::size_t j = 0; j < solvalues.size(); ++j){
             soln.push_back(solvalues[j]);
-            printf("%f ", solvalues[j]);
         }
-        printf("\n");
         if (soln[0] > -.564602 && soln[0] < 2.135398 &&
             soln[1] > -.3536 && soln[1] < 1.2963 &&
             soln[2] > -.65 && soln[2] < 3.75 &&
             soln[3] > -2.1213 && soln[3] < -.15 &&
             soln[5] > -2 && soln[5] < -.1){
             soln_list->push_back(soln);
-            for( std::size_t j = 0; j < solvalues.size(); ++j){
-                printf("%f ", solvalues[j]);
-            }
         }
     }
     if (!soln_list->size()){
@@ -120,18 +98,6 @@ KDL::Frame IKFastPR2::getKDLObjectState(const vector<double> arm_angles){
                       eerot[3], eerot[4], eerot[5],
                       eerot[6], eerot[7], eerot[8]);
 
-    printf("free ange: %f\n", arm_angles[UPPER_ARM_ROLL]);
-    printf("\n%f %f %f", eetrans[0], eetrans[1], eetrans[2]);
-    printf("\n%f %f %f\n%f %f %f\n%f %f %f\n",
-            eerot[0],
-            eerot[1],
-            eerot[2],
-            eerot[3],
-            eerot[4],
-            eerot[5],
-            eerot[6],
-            eerot[7],
-            eerot[8]);
     KDL::Frame wrist_frame = KDL::Frame(rot, kdl_v)*OR_offset;
     double roll, pitch, yaw;
     wrist_frame.M.GetRPY(roll, pitch, yaw);
