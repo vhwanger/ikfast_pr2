@@ -110,7 +110,9 @@ KDL::Frame IKFastPR2::getKDLObjectState(const vector<double> arm_angles){
     double roll, pitch, yaw;
     wrist_frame.M.GetRPY(roll, pitch, yaw);
     vector<vector<double> > test;
+    printf("testing");
     ikAllSoln(wrist_frame, arm_angles[UPPER_ARM_ROLL], &test);
+    printf("done testing");
     return wrist_frame;
 }
 
