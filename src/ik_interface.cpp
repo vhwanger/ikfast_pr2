@@ -30,6 +30,7 @@ bool IKFastPR2::ikAllSoln(const KDL::Frame& wrist_frame, double free_angle,
     printf("ikAllSoln frame: %f %f %f (%f %f %f)",
             OR_tool_frame.p.x(), OR_tool_frame.p.y(),
             OR_tool_frame.p.z(), roll, pitch, yaw);
+    printf("\nfree angle: %f", free_angle);
     
     IkReal eerot[ROT_DATA_SIZE], eetrans[3];
     eetrans[0] = OR_tool_frame.p.x();
@@ -53,6 +54,7 @@ bool IKFastPR2::ikAllSoln(const KDL::Frame& wrist_frame, double free_angle,
         sol.GetSolution(&solvalues[0],vsolfree.size()>0?&vsolfree[0]:NULL);
         for( std::size_t j = 0; j < solvalues.size(); ++j){
             soln.push_back(solvalues[j]);
+            printf("%f ", solvalues[j]);
         }
         printf("\n");
         if (soln[0] > -.564602 && soln[0] < 2.135398 &&
