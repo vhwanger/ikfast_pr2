@@ -66,7 +66,7 @@ void run_ik(const sensor_msgs::JointState& msg){
 
     std::vector<double> ik_angles;
     if (ik_solver.ik(wrist_frame, msg.position[17], &ik_angles)){
-        obj_frame = ik_solver.getKDLObjectState(angles);
+        obj_frame = ik_solver.getKDLObjectState(ik_angles);
         obj_frame.M.GetRPY(roll, pitch, yaw);
         assert(fabs(wrist_frame.p.x()-obj_frame.p.x()) < .001);
         assert(fabs(wrist_frame.p.y()-obj_frame.p.y()) < .001);
