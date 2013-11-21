@@ -25,10 +25,12 @@ enum Joints {
 
 class IKFastPR2 {
     public:
+        IKFastPR2();
         // returns the ik solution closest to the given free angle
         bool ik(const ObjectState&, double free_angle, std::vector<double>* angles);
         bool ikAllSoln(const ObjectState&, double free_angle, 
                                   std::vector<std::vector<double> >* all_soln);
         ObjectState getRightArmObjectState(const std::vector<double>);
         KDL::Frame getKDLObjectState(const std::vector<double> arm_angles);
+        KDL::Frame offset;
 };

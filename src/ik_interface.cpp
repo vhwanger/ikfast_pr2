@@ -16,6 +16,11 @@ using namespace ik_pr2_rightarm;
 //min_joint_limits:  -0.564602 -0.353600 -0.6500 -2.121300 0 -2.0 0
 //max_joint_limits:   2.135398  1.296300  3.7500 -0.15000  0 -0.1 0
 
+IKFastPR2::IKFastPR2(){
+    KDL::Rotation rot = KDL::Rotation::Quaternion(0, pow(2,.5)/2, 0, pow(2,.5)/2);
+    KDL::Vector v(.18, 0, 0);
+    offset = KDL::Frame(rot, v);
+}
 bool IKFastPR2::ikAllSoln(const ObjectState& obj_pose, double free_angle,
                           std::vector<std::vector<double> >* soln_list){
     Rotation rot = Rotation::RPY(obj_pose.roll, obj_pose.pitch, obj_pose.yaw);
@@ -81,7 +86,7 @@ KDL::Frame IKFastPR2::getKDLObjectState(const vector<double> arm_angles){
     //                     -1, 0, 0);
     //KDL::Rotation new_rot = rot*offset;
 
-    return KDL::Frame(rot, kdl_v);
+    return KDL::Frame(rot, kdl_v)*offset;
 }
 
 ObjectState IKFastPR2::getRightArmObjectState(const vector<double> arm_angles){
