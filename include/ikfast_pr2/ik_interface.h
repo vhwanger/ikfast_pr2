@@ -32,5 +32,5 @@ class IKFastPR2 {
                                   std::vector<std::vector<double> >* all_soln);
         ObjectState getRightArmObjectState(const std::vector<double>);
         KDL::Frame getKDLObjectState(const std::vector<double> arm_angles);
-        KDL::Frame offset;
+        KDL::Frame OR_offset;
 };

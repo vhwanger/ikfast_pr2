@@ -20,18 +20,22 @@ IKFastPR2::IKFastPR2(){
     KDL::Rotation rot = KDL::Rotation::Quaternion(0, -pow(2,.5)/2, 0, pow(2,.5)/2);
     //KDL::Rotation rot = KDL::Rotation::Quaternion(0, 1, 0, 0);
     KDL::Vector v(0, 0, -.18);
-    offset = KDL::Frame(rot, v);
+    OR_offset = KDL::Frame(rot, v);
 }
 bool IKFastPR2::ikAllSoln(const ObjectState& obj_pose, double free_angle,
                           std::vector<std::vector<double> >* soln_list){
     Rotation rot = Rotation::RPY(obj_pose.roll, obj_pose.pitch, obj_pose.yaw);
+    Vector v(obj_pose.x, obj_pose.y, obj_pose.z);
+    Frame wrist_frame(rot, v);
+    Frame OR_tool_frame = wrist_frame*OR_offset.Inverse();
+    
     IkReal eerot[ROT_DATA_SIZE], eetrans[3];
-    eetrans[0] = obj_pose.x;
-    eetrans[1] = obj_pose.y;
-    eetrans[2] = obj_pose.z;
+    eetrans[0] = OR_tool_frame.p.x();
+    eetrans[1] = OR_tool_frame.p.y();
+    eetrans[2] = OR_tool_frame.p.z();
 
     for (int i=0; i < ROT_DATA_SIZE; i++){
-        eerot[i] = rot.data[i];
+        eerot[i] = OR_tool_frame.M.data[i];
     }
     IkSolutionList<IkReal> solutions;
     std::vector<IkReal> vfree(GetNumFreeParameters(), free_angle);
@@ -82,12 +86,8 @@ KDL::Frame IKFastPR2::getKDLObjectState(const vector<double> arm_angles){
     KDL::Rotation rot(eerot[0], eerot[1], eerot[2],
                       eerot[3], eerot[4], eerot[5],
                       eerot[6], eerot[7], eerot[8]);
-    //KDL::Rotation offset(0, 0, 1,
-    //                     0, 1, 0,
-    //                     -1, 0, 0);
-    //KDL::Rotation new_rot = rot*offset;
 
-    return KDL::Frame(rot, kdl_v)*offset;
+    return KDL::Frame(rot, kdl_v)*OR_offset;
 }
 
 ObjectState IKFastPR2::getRightArmObjectState(const vector<double> arm_angles){
