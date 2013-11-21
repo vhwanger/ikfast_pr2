@@ -66,16 +66,16 @@ void run_ik(const sensor_msgs::JointState& msg){
 
     std::vector<double> ik_angles;
     if (ik_solver.ik(wrist_frame, msg.position[17], &ik_angles)){
-        ROS_INFO("ik succeeded");
-        assert(fabs(ik_angles[0]-msg.position[18]) < .001);
-        assert(fabs(ik_angles[1]-msg.position[19]) < .001);
-        assert(fabs(ik_angles[2]-msg.position[17]) < .001);
-        assert(fabs(ik_angles[3]-msg.position[21]) < .001);
-        assert(fabs(ik_angles[4]-msg.position[20]) < .001);
-        assert(fabs(ik_angles[5]-msg.position[22]) < .001);
-        assert(fabs(ik_angles[6]-msg.position[23]) < .001);
+        obj_frame = ik_solver.getKDLObjectState(angles);
+        obj_frame.M.GetRPY(roll, pitch, yaw);
     } else {
         ROS_INFO("ik failed!");
+        assert(fabs(wrist_frame.p.x()-obj_frame.p.x()) < .001);
+        assert(fabs(wrist_frame.p.y()-obj_frame.p.y()) < .001);
+        assert(fabs(wrist_frame.p.z()-obj_frame.p.z()) < .001);
+        assert(fabs(roll2-roll) < .0001);
+        assert(fabs(pitch2-pitch) < .0001);
+        assert(fabs(yaw2-yaw) < .0001);
     }
 }
 int main(int argc, char** argv){
