@@ -50,6 +50,7 @@ void run_ik(const sensor_msgs::JointState& msg){
 
 
     double roll, pitch, yaw;
+    ROS_INFO("wrist frame %f %f %f", wrist_frame.p.x(), wrist_frame.p.y(); wrist_frame.p.z());
     wrist_frame.M.GetRPY(roll, pitch, yaw);
     assert(wrist_frame.p.x() == obj.x);
     assert(wrist_frame.p.y() == obj.y);
