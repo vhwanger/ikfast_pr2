@@ -41,6 +41,7 @@ bool IKFastPR2::ikAllSoln(const KDL::Frame& wrist_frame, double free_angle,
         eerot[i] = OR_tool_frame.M.data[i];
     }
 
+    printf("\n%f %f %f", eetrans[0], eetrans[1], eetrans[2]);
     printf("\n%f %f %f\n%f %f %f\n%f %f %f\n",
             eerot[0],
             eerot[1],
@@ -119,6 +120,7 @@ KDL::Frame IKFastPR2::getKDLObjectState(const vector<double> arm_angles){
                       eerot[3], eerot[4], eerot[5],
                       eerot[6], eerot[7], eerot[8]);
 
+    printf("\n%f %f %f", eetrans[0], eetrans[1], eetrans[2]);
     printf("\n%f %f %f\n%f %f %f\n%f %f %f\n",
             eerot[0],
             eerot[1],
@@ -133,11 +135,6 @@ KDL::Frame IKFastPR2::getKDLObjectState(const vector<double> arm_angles){
     double roll, pitch, yaw;
     wrist_frame.M.GetRPY(roll, pitch, yaw);
     vector<vector<double> > test;
-    printf("testing");
-    if (!ikAllSoln(wrist_frame, arm_angles[UPPER_ARM_ROLL], &test)){
-        printf("FAILEDDDD");
-    }
-    printf("done testing");
     return wrist_frame;
 }
 
