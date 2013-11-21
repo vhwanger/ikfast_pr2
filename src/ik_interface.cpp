@@ -109,14 +109,8 @@ KDL::Frame IKFastPR2::getKDLObjectState(const vector<double> arm_angles){
     KDL::Frame wrist_frame = KDL::Frame(rot, kdl_v)*OR_offset;
     double roll, pitch, yaw;
     wrist_frame.M.GetRPY(roll, pitch, yaw);
-    printf("openrave object frame in fk %f %f %f (%f %f %f)",
-            wrist_frame.p.x(), wrist_frame.p.y(), wrist_frame.p.z(),
-            roll, pitch, yaw);
-    Frame test = wrist_frame * OR_offset.Inverse();
-    test.M.GetRPY(roll, pitch, yaw);
-    printf("test %f %f %f (%f %f %f)",
-            test.p.x(), test.p.y(), test.p.z(), roll, pitch, yaw);
-
+    vector<vector<double> > test;
+    ikAllSoln(wrist_frame, arm_angles[UPPER_ARM_ROLL], &test);
     return wrist_frame;
 }
 

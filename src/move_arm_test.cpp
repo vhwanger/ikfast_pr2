@@ -30,16 +30,19 @@ void run_ik(const sensor_msgs::JointState& msg){
               msg.position[22],
               msg.position[23]);
     IKFastPR2 ik_solver;
-    ObjectState obj;
-    obj = ik_solver.getRightArmObjectState(angles);
+    KDL::Frame obj_frame;
+    obj_frame = ik_solver.getKDLObjectState(angles);
+    double roll, pitch, yaw;
+    obj_frame.M.GetRPY(roll, pitch, yaw);
+
     ROS_INFO("computed obj pose");
     ROS_INFO("%f %f %f %f %f %f",
-            obj.x,
-            obj.y,
-            obj.z,
-            obj.roll,
-            obj.pitch,
-            obj.yaw);
+            obj_frame.p.x(),
+            obj_frame.p.y(),
+            obj_frame.p.z(),
+            roll,
+            pitch,
+            yaw);
 
     tf::StampedTransform fk_transform;
     KDL::Frame wrist_frame;
@@ -49,17 +52,17 @@ void run_ik(const sensor_msgs::JointState& msg){
     tf::TransformTFToKDL(fk_transform, wrist_frame);
 
 
-    double roll, pitch, yaw;
-    wrist_frame.M.GetRPY(roll, pitch, yaw);
+    double roll2, pitch2, yaw2;
+    wrist_frame.M.GetRPY(roll2, pitch2, yaw2);
     ROS_INFO("wrist frame %f %f %f (%f %f %f)", 
              wrist_frame.p.x(), wrist_frame.p.y(), wrist_frame.p.z(),
              roll, pitch, yaw);
-    assert(fabs(wrist_frame.p.x()-obj.x) < .001);
-    assert(fabs(wrist_frame.p.y()-obj.y) < .001);
-    assert(fabs(wrist_frame.p.z()-obj.z) < .001);
-    assert(fabs(roll-obj.roll) < .0001);
-    assert(fabs(pitch-obj.pitch) < .0001);
-    assert(fabs(yaw-obj.yaw) < .0001);
+    assert(fabs(wrist_frame.p.x()-obj_frame.p.x()) < .001);
+    assert(fabs(wrist_frame.p.y()-obj_frame.p.y()) < .001);
+    assert(fabs(wrist_frame.p.z()-obj_frame.p.z()) < .001);
+    assert(fabs(roll2-roll) < .0001);
+    assert(fabs(pitch2-pitch) < .0001);
+    assert(fabs(yaw2-yaw) < .0001);
 
     std::vector<double> ik_angles;
     if (ik_solver.ik(wrist_frame, msg.position[17], &ik_angles)){
