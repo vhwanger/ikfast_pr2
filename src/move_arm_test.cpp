@@ -52,22 +52,22 @@ void run_ik(const sensor_msgs::JointState& msg){
     double roll, pitch, yaw;
     ROS_INFO("wrist frame %f %f %f", wrist_frame.p.x(), wrist_frame.p.y(), wrist_frame.p.z());
     wrist_frame.M.GetRPY(roll, pitch, yaw);
-    assert(wrist_frame.p.x() == obj.x);
-    assert(wrist_frame.p.y() == obj.y);
-    assert(wrist_frame.p.z() == obj.z);
-    assert(roll == obj.roll);
-    assert(pitch == obj.pitch);
-    assert(yaw == obj.yaw);
+    assert(fabs(wrist_frame.p.x()-obj.x) < .0001);
+    assert(fabs(wrist_frame.p.y()-obj.y) < .0001);
+    assert(fabs(wrist_frame.p.z()-obj.z) < .0001);
+    assert(fabs(roll-obj.roll) < .0001);
+    assert(fabs(pitch-obj.pitch) < .0001);
+    assert(fabs(yaw-obj.yaw) < .0001);
 
     std::vector<double> ik_angles;
     ik_solver.ik(wrist_frame, msg.position[17], &ik_angles);
-    assert(ik_angles[0] == msg.position[18]);
-    assert(ik_angles[1] == msg.position[19]);
-    assert(ik_angles[2] == msg.position[17]);
-    assert(ik_angles[3] == msg.position[21]);
-    assert(ik_angles[4] == msg.position[20]);
-    assert(ik_angles[5] == msg.position[22]);
-    assert(ik_angles[6] == msg.position[23]);
+    assert(fabs(ik_angles[0]-msg.position[18]) < .0001);
+    assert(fabs(ik_angles[1]-msg.position[19]) < .0001);
+    assert(fabs(ik_angles[2]-msg.position[17]) < .0001);
+    assert(fabs(ik_angles[3]-msg.position[21]) < .0001);
+    assert(fabs(ik_angles[4]-msg.position[20]) < .0001);
+    assert(fabs(ik_angles[5]-msg.position[22]) < .0001);
+    assert(fabs(ik_angles[6]-msg.position[23]) < .0001);
 }
 int main(int argc, char** argv){
     ros::init(argc, argv, "arm_test");
