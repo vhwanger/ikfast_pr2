@@ -17,8 +17,9 @@ using namespace ik_pr2_rightarm;
 //max_joint_limits:   2.135398  1.296300  3.7500 -0.15000  0 -0.1 0
 
 IKFastPR2::IKFastPR2(){
-    KDL::Rotation rot = KDL::Rotation::Quaternion(0, pow(2,.5)/2, 0, pow(2,.5)/2);
-    KDL::Vector v(.18, 0, 0);
+    //KDL::Rotation rot = KDL::Rotation::Quaternion(0, pow(2,.5)/2, 0, pow(2,.5)/2);
+    KDL::Rotation rot = KDL::Rotation::Quaternion(0, 1, 0, 0);
+    KDL::Vector v(.18, 0, -.18);
     offset = KDL::Frame(rot, v);
 }
 bool IKFastPR2::ikAllSoln(const ObjectState& obj_pose, double free_angle,
