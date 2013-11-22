@@ -9,12 +9,12 @@
 #include <tf_conversions/tf_kdl.h>
 #include <angles/angles.h>
 
+using namespace std;
 
 void run_ik(const sensor_msgs::JointState& msg){
     std::vector<double> angles;
     PViz pviz;
-    pviz.setReferenceFrame("/torso_lift_link");
-    sleep(2);
+    pviz.setReferenceFrame("/base_link");
     angles.push_back(msg.position[18]);
     angles.push_back(msg.position[19]);
     angles.push_back(msg.position[17]);
@@ -66,9 +66,39 @@ void run_ik(const sensor_msgs::JointState& msg){
     assert(fabs(yaw2-yaw) < .0001);
 
     std::vector<double> ik_angles;
+
+    vector<vector<double> > all_soln;
+    ik_solver.ikAllSoln(wrist_frame, msg.position[17], &all_soln);
+    BodyPose bp;
+    bp.x = 0; bp.y = 0; bp.z = 0; bp.theta = 0;
+
+    //for (int i=0; i < all_soln.size(); i++){
+    //    vector<double> test_ang = all_soln[i];
+    //    pviz.visualizeRobot(test_ang, test_ang, bp, 150, "blah", 0);
+    //    ROS_INFO("currently visualizing %f %f %f %f %f %f %f",
+    //            test_ang[0],
+    //            test_ang[1],
+    //            test_ang[2],
+    //            test_ang[3],
+    //            test_ang[4],
+    //            test_ang[5],
+    //            test_ang[6]);
+    //    char shit;
+    //    std::cin >> shit;
+    //}
+
     if (ik_solver.ik(wrist_frame, msg.position[17], &ik_angles)){
         obj_frame = ik_solver.getKDLObjectState(ik_angles);
         obj_frame.M.GetRPY(roll, pitch, yaw);
+        ROS_INFO("computed obj_frame %f %f %f %f %f %f", obj_frame.p.x(), obj_frame.p.y(), obj_frame.p.z(), roll, pitch, yaw);
+        ROS_INFO("successful angle %f %f %f %f %f %f %f",
+                ik_angles[0],
+                ik_angles[1],
+                ik_angles[2],
+                ik_angles[3],
+                ik_angles[4],
+                ik_angles[5],
+                ik_angles[6]);
         assert(fabs(wrist_frame.p.x()-obj_frame.p.x()) < .001);
         assert(fabs(wrist_frame.p.y()-obj_frame.p.y()) < .001);
         assert(fabs(wrist_frame.p.z()-obj_frame.p.z()) < .001);
@@ -76,8 +106,6 @@ void run_ik(const sensor_msgs::JointState& msg){
         assert(fabs(pitch2-pitch) < .0001);
         assert(fabs(yaw2-yaw) < .0001);
         ROS_INFO("test succeeded!");
-        BodyPose bp;
-        bp.x = 0; bp.y = 0; bp.z = 0; bp.theta = 0;
         pviz.visualizeRobot(ik_angles, ik_angles, bp, 150, "blah", 0);
     } else {
         ROS_INFO("ik failed");

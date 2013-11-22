@@ -41,3 +41,6 @@ rosbuild_link_boost(${PROJECT_NAME} thread)
 #
 rosbuild_add_executable(move_arm_test src/move_arm_test.cpp)
 target_link_libraries(move_arm_test ${PROJECT_NAME})
+
+rosbuild_add_executable(comparison src/comparison.cpp)
+target_link_libraries(comparison ${PROJECT_NAME})
