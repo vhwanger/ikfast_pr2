@@ -3,7 +3,7 @@
 using namespace std;
 
 
-Tester::Tester():arm("right"),counter(0):kdl_c(0),ikfast_c(0){ arm.setReferenceFrame("/torso_lift_link");}
+Tester::Tester():arm("right"),counter(0),kdl_c(0),ikfast_c(0){ arm.setReferenceFrame("/torso_lift_link");}
 
 void Tester::run_ik(const sensor_msgs::JointState& msg){
     std::vector<double> angles;
