@@ -21,9 +21,9 @@ class Tester {
         int kdl_c;
         int ikfast_c;
         tf::TransformListener listener;
-        unsigned int ikfast_time;
-        unsigned int kdl_time;
+        unsigned long int ikfast_time;
+        unsigned long int kdl_time;
 
-        unsigned int kdl_fk;
-        unsigned int ikfast_fk;
+        unsigned long int kdl_fk;
+        unsigned long int ikfast_fk;
 };

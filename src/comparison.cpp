@@ -31,18 +31,18 @@ void Tester::run_ik(const sensor_msgs::JointState& msg){
     struct timeval tv_b;
     struct timeval tv_a;
     gettimeofday(&tv_b, NULL);
-    double before = tv_b.tv_usec/1000 + (tv_b.tv_sec * 1000);
+    double before = tv_b.tv_usec + (tv_b.tv_sec * 1000000);
     bool fastik_success = ik_solver.ikRightArm(wrist_frame, msg.position[17], &ik_angles);
     gettimeofday(&tv_a, NULL);
-    double after = tv_a.tv_usec/1000 + (tv_a.tv_sec * 1000);
+    double after = tv_a.tv_usec + (tv_a.tv_sec * 1000000);
     ikfast_time += after - before;
 
     if (fastik_success){
         gettimeofday(&tv_b, NULL);
-        before = tv_b.tv_usec/1000 + (tv_b.tv_sec * 1000);
+        before = tv_b.tv_usec + (tv_b.tv_sec * 1000000);
         KDL::Frame obj_frame = ik_solver.fkRightArm(ik_angles);
         gettimeofday(&tv_a, NULL);
-        after = tv_a.tv_usec/1000 + (tv_a.tv_sec * 1000);
+        after = tv_a.tv_usec + (tv_a.tv_sec * 1000000);
         ikfast_fk += after - before;
 
         double roll, pitch, yaw;
@@ -68,10 +68,10 @@ void Tester::run_ik(const sensor_msgs::JointState& msg){
                                 pose.orientation.z,
                                 pose.orientation.w);
     gettimeofday(&tv_b, NULL);
-    before = tv_b.tv_usec/1000 + (tv_b.tv_sec * 1000);
+    before = tv_b.tv_usec + (tv_b.tv_sec * 1000000);
     bool kdl_success = arm.computeIK(pose, angles, kdl_angles);
     gettimeofday(&tv_a, NULL);
-    after = tv_a.tv_usec/1000 + (tv_a.tv_sec * 1000);
+    after = tv_a.tv_usec + (tv_a.tv_sec * 1000000);
     kdl_time += after - before;
 
     if (kdl_success){
@@ -81,10 +81,10 @@ void Tester::run_ik(const sensor_msgs::JointState& msg){
 
     vector<double> temp_pose(6,0);
     gettimeofday(&tv_b, NULL);
-    before = tv_b.tv_usec/1000 + (tv_b.tv_sec * 1000);
+    before = tv_b.tv_usec + (tv_b.tv_sec * 1000000);
     arm.performFK(angles, temp_pose);
     gettimeofday(&tv_a, NULL);
-    after = tv_a.tv_usec/1000 + (tv_a.tv_sec * 1000);
+    after = tv_a.tv_usec + (tv_a.tv_sec * 1000000);
     kdl_fk += after - before;
 
     ROS_INFO("%d: kdl %d      fast_ik %d", counter, kdl_success, fastik_success);
