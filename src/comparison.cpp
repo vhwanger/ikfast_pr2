@@ -2,8 +2,10 @@
 
 using namespace std;
 
-
-Tester::Tester():arm("right"),counter(0),kdl_c(0),ikfast_c(0),ikfast_time(0){ arm.setReferenceFrame("/torso_lift_link");}
+Tester::Tester():arm("right"),counter(0),kdl_c(0),
+                 ikfast_c(0),ikfast_time(0), kdl_fk(0), ikfast_fk(0){ 
+     arm.setReferenceFrame("/torso_lift_link");
+}
 
 void Tester::run_ik(const sensor_msgs::JointState& msg){
     std::vector<double> angles;
@@ -36,7 +38,13 @@ void Tester::run_ik(const sensor_msgs::JointState& msg){
     ikfast_time += after - before;
 
     if (fastik_success){
+        gettimeofday(&tv_b, NULL);
+        before = tv_b.tv_usec + (tv_b.tv_sec * 1000);
         KDL::Frame obj_frame = ik_solver.fkRightArm(ik_angles);
+        gettimeofday(&tv_a, NULL);
+        after = tv_a.tv_usec + (tv_a.tv_sec * 1000);
+        ikfast_fk += after - before;
+
         double roll, pitch, yaw;
         obj_frame.M.GetRPY(roll, pitch, yaw);
         assert(fabs(wrist_frame.p.x()-obj_frame.p.x()) < .001);
@@ -51,8 +59,6 @@ void Tester::run_ik(const sensor_msgs::JointState& msg){
     }
 
 
-    gettimeofday(&tv_b, NULL);
-    before = tv_b.tv_usec + (tv_b.tv_sec * 1000);
     geometry_msgs::Pose pose;
     pose.position.x = wrist_frame.p.x();
     pose.position.y = wrist_frame.p.y();
@@ -61,6 +67,8 @@ void Tester::run_ik(const sensor_msgs::JointState& msg){
                                 pose.orientation.y,
                                 pose.orientation.z,
                                 pose.orientation.w);
+    gettimeofday(&tv_b, NULL);
+    before = tv_b.tv_usec + (tv_b.tv_sec * 1000);
     bool kdl_success = arm.computeIK(pose, angles, kdl_angles);
     gettimeofday(&tv_a, NULL);
     after = tv_a.tv_usec + (tv_a.tv_sec * 1000);
@@ -71,13 +79,22 @@ void Tester::run_ik(const sensor_msgs::JointState& msg){
     }
     sleep(.1);
 
+    vector<double> temp_pose(6,0);
+    gettimeofday(&tv_b, NULL);
+    before = tv_b.tv_usec + (tv_b.tv_sec * 1000);
+    arm.performFK(angles, temp_pose);
+    gettimeofday(&tv_a, NULL);
+    after = tv_a.tv_usec + (tv_a.tv_sec * 1000);
+    kdl_fk += after - before;
+
     ROS_INFO("%d: kdl %d      fast_ik %d", counter, kdl_success, fastik_success);
 
     counter++;
     if (counter == 1000){
         ROS_INFO("kdl: %d, fastik %d", kdl_c, ikfast_c);
         ROS_INFO("kdl: %f, fastik %f", kdl_time, ikfast_time);
-        sleep(100);
+        ROS_INFO("kdl fk: %f, fastik fk %f", kdl_fk, ikfast_fk);
+        exit(0);
     }
 }
 int main(int argc, char** argv){

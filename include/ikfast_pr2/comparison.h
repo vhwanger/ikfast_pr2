@@ -23,4 +23,7 @@ class Tester {
         double ikfast_time;
         tf::TransformListener listener;
         double kdl_time;
+
+        double kdl_fk;
+        double ikfast_fk;
 };
