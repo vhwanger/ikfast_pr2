@@ -30,7 +30,7 @@ void Tester::run_ik(const sensor_msgs::JointState& msg){
     struct timeval tv_a;
     gettimeofday(&tv_b, NULL);
     double before = tv_b.tv_usec + (tv_b.tv_sec * 1000);
-    bool fastik_success = ik_solver.ikLeftArm(wrist_frame, msg.position[17], &ik_angles);
+    bool fastik_success = ik_solver.ikLeftArm(wrist_frame, msg.position[31], &ik_angles);
     gettimeofday(&tv_a, NULL);
     double after = tv_a.tv_usec + (tv_a.tv_sec * 1000);
     ikfast_time += after - before;

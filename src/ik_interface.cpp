@@ -223,13 +223,13 @@ bool IKFastPR2::ikAllSolnLeftArm(const KDL::Frame& wrist_frame,
         // Soft joint limits - this causes ik to fail a lot more, but i'll leave
         // it here just cause.
 #ifdef USE_SOFT_JOINT_LIMITS
-        if (soln[0] > -2.1353981634 && soln[0] < 0.564601836603 &&
-            soln[1] > -.3536 && soln[1] < 1.2963 &&
-            soln[2] > -3.75 && soln[2] < .65 &&
-            soln[3] > -2.1213 && soln[3] < -.15 &&
-            soln[5] > -2 && soln[5] < -.1){
-            soln_list->push_back(soln);
-        }
+        //if (soln[0] > -2.1353981634 && soln[0] < 0.564601836603 &&
+        //    soln[1] > -.3536 && soln[1] < 1.2963 &&
+        //    soln[2] > -3.75 && soln[2] < .65 &&
+        //    soln[3] > -2.1213 && soln[3] < -.15 &&
+        //    soln[5] > -2 && soln[5] < -.1){
+        //    soln_list->push_back(soln);
+        //}
 #endif
     }
     if (!soln_list->size()){
