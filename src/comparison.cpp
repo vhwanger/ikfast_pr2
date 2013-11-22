@@ -3,7 +3,7 @@
 using namespace std;
 
 
-Tester::Tester():arm("right"){ arm.setReferenceFrame("/torso_lift_link");}
+Tester::Tester():arm("right"),counter(0){ arm.setReferenceFrame("/torso_lift_link");}
 
 void Tester::run_ik(const sensor_msgs::JointState& msg){
     std::vector<double> angles;
@@ -46,16 +46,26 @@ void Tester::run_ik(const sensor_msgs::JointState& msg){
         assert(fabs(wroll-roll) < .0001);
         assert(fabs(wpitch-pitch) < .0001);
         assert(fabs(wyaw-yaw) < .0001);
+        ikfast_c++;
     } else {
         ROS_ERROR("fast ik failed");
     }
 
 
-    bool kdl_success = false;
-    kdl_success = arm.computeIK(pose, angles, kdl_angles);
+    bool kdl_success = arm.computeIK(pose, angles, kdl_angles);
+    if (kdl_success){
+        kdl_c++;
+    }
     sleep(.1);
 
     ROS_INFO("kdl %d      fast_ik %d", kdl_success, fastik_success);
+
+
+    counter++;
+    if (counter == 1000){
+        ROS_INFO("kdl: %d, fastik %d", kdl_c, ikfast_c);
+        sleep(100);
+    }
 }
 int main(int argc, char** argv){
     ros::init(argc, argv, "arm_test");

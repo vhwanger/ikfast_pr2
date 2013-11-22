@@ -17,5 +17,8 @@ class Tester {
     private:
         IKFastPR2 ik_solver;
         tf::TransformListener listener;
+        int counter;
+        int ikfast_c;
+        int kdl_c;
         Arm arm;
 };
