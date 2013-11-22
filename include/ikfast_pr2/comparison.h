@@ -15,6 +15,11 @@ class Tester {
         Tester();
         void run_ik(const sensor_msgs::JointState& msg);
     private:
+        bool run_ikfast_test(const KDL::Frame& wrist_frame, double free_angle);
+        bool run_kdl_test(const KDL::Frame& wrist_frame, 
+                          const vector<double>& seed_angle);
+
+
         IKFastPR2 ik_solver;
         Arm arm;
         int counter;
@@ -23,7 +28,6 @@ class Tester {
         tf::TransformListener listener;
         unsigned long int ikfast_time;
         unsigned long int kdl_time;
-
         unsigned long int kdl_fk;
         unsigned long int ikfast_fk;
 };

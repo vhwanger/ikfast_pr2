@@ -3,36 +3,23 @@
 using namespace std;
 
 Tester::Tester():arm("right"),counter(0),kdl_c(0),
-                 ikfast_c(0),ikfast_time(0), kdl_fk(0), ikfast_fk(0){ 
+                 ikfast_c(0),ikfast_time(0), kdl_fk(0), 
+                 ikfast_fk(0){ 
      arm.setReferenceFrame("/torso_lift_link");
 }
 
-void Tester::run_ik(const sensor_msgs::JointState& msg){
-    std::vector<double> angles;
-    angles.push_back(msg.position[18]);
-    angles.push_back(msg.position[19]);
-    angles.push_back(msg.position[17]);
-    angles.push_back(msg.position[21]);
-    angles.push_back(msg.position[20]);
-    angles.push_back(msg.position[22]);
-    angles.push_back(msg.position[23]);
-
-    tf::StampedTransform fk_transform;
-    KDL::Frame wrist_frame;
-    listener.waitForTransform("/torso_lift_link", "/r_wrist_roll_link", ros::Time(0), ros::Duration(10));
-    listener.lookupTransform("/torso_lift_link", "/r_wrist_roll_link", ros::Time(0), fk_transform);
-    tf::transformTFToKDL(fk_transform, wrist_frame);
-
+bool Tester::run_ikfast_test(const KDL::Frame& wrist_frame,
+                             double free_angle){
     double wroll, wpitch, wyaw;
     wrist_frame.M.GetRPY(wroll, wpitch, wyaw);
 
     vector<double> ik_angles;
-    vector<double> kdl_angles(7,0);
     struct timeval tv_b;
     struct timeval tv_a;
     gettimeofday(&tv_b, NULL);
     double before = tv_b.tv_usec + (tv_b.tv_sec * 1000000);
-    bool fastik_success = ik_solver.ikRightArm(wrist_frame, msg.position[17], &ik_angles);
+    bool fastik_success = ik_solver.ikRightArm(wrist_frame, 
+                                               free_angle, &ik_angles);
     gettimeofday(&tv_a, NULL);
     double after = tv_a.tv_usec + (tv_a.tv_sec * 1000000);
     ikfast_time += after - before;
@@ -57,7 +44,13 @@ void Tester::run_ik(const sensor_msgs::JointState& msg){
     } else {
         ROS_ERROR("fast ik failed");
     }
+    return fastik_success;
+}
 
+bool Tester::run_kdl_test(const KDL::Frame& wrist_frame, 
+                          const vector<double>& seed_angles){
+    double wroll, wpitch, wyaw;
+    wrist_frame.M.GetRPY(wroll, wpitch, wyaw);
 
     geometry_msgs::Pose pose;
     pose.position.x = wrist_frame.p.x();
@@ -67,9 +60,13 @@ void Tester::run_ik(const sensor_msgs::JointState& msg){
                                 pose.orientation.y,
                                 pose.orientation.z,
                                 pose.orientation.w);
+    struct timeval tv_b;
+    struct timeval tv_a;
+    double before, after;
     gettimeofday(&tv_b, NULL);
     before = tv_b.tv_usec + (tv_b.tv_sec * 1000000);
-    bool kdl_success = arm.computeIK(pose, angles, kdl_angles);
+    vector<double> kdl_angles(7,0);
+    bool kdl_success = arm.computeIK(pose, seed_angles, kdl_angles);
     gettimeofday(&tv_a, NULL);
     after = tv_a.tv_usec + (tv_a.tv_sec * 1000000);
     kdl_time += after - before;
@@ -82,13 +79,36 @@ void Tester::run_ik(const sensor_msgs::JointState& msg){
     vector<double> temp_pose(6,0);
     gettimeofday(&tv_b, NULL);
     before = tv_b.tv_usec + (tv_b.tv_sec * 1000000);
-    arm.performFK(angles, temp_pose);
+    arm.performFK(seed_angles, temp_pose);
     gettimeofday(&tv_a, NULL);
     after = tv_a.tv_usec + (tv_a.tv_sec * 1000000);
     kdl_fk += after - before;
+    return kdl_success;
+}
 
-    ROS_INFO("%d: kdl %d      fast_ik %d", counter, kdl_success, fastik_success);
 
+void Tester::run_ik(const sensor_msgs::JointState& msg){
+    std::vector<double> angles;
+    angles.push_back(msg.position[18]);
+    angles.push_back(msg.position[19]);
+    angles.push_back(msg.position[17]);
+    angles.push_back(msg.position[21]);
+    angles.push_back(msg.position[20]);
+    angles.push_back(msg.position[22]);
+    angles.push_back(msg.position[23]);
+
+    tf::StampedTransform fk_transform;
+    KDL::Frame wrist_frame;
+    listener.waitForTransform("/torso_lift_link", "/r_wrist_roll_link", 
+                              ros::Time(0), ros::Duration(10));
+    listener.lookupTransform("/torso_lift_link", "/r_wrist_roll_link", 
+                             ros::Time(0), fk_transform);
+    tf::transformTFToKDL(fk_transform, wrist_frame);
+
+    bool fastik_success = run_ikfast_test(wrist_frame, msg.position[17]);
+    bool kdl_success = run_kdl_test(wrist_frame, angles);
+
+    ROS_INFO("%d: kdl %d fast_ik %d", counter, kdl_success, fastik_success);
     counter++;
     if (counter == 1000){
         ROS_INFO("kdl: %d, fastik %d", kdl_c, ikfast_c);
@@ -101,7 +121,8 @@ int main(int argc, char** argv){
     ros::init(argc, argv, "arm_test");
     ros::NodeHandle nh;
     Tester tester;
-    ros::Subscriber sub = nh.subscribe("/joint_states", 1, &Tester::run_ik, &tester);
+    ros::Subscriber sub = nh.subscribe("/joint_states", 1
+                                       , &Tester::run_ik, &tester);
     sleep(1);
     ros::spin();
     return 0;
