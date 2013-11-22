@@ -32,7 +32,7 @@ void run_ik(const sensor_msgs::JointState& msg){
               angles::normalize_angle(msg.position[23]));
     IKFastPR2 ik_solver;
     KDL::Frame obj_frame;
-    obj_frame = ik_solver.getKDLObjectState(angles);
+    obj_frame = ik_solver.fkRightArm(angles);
     double roll, pitch, yaw;
     obj_frame.M.GetRPY(roll, pitch, yaw);
 
@@ -68,7 +68,7 @@ void run_ik(const sensor_msgs::JointState& msg){
     std::vector<double> ik_angles;
 
     vector<vector<double> > all_soln;
-    ik_solver.ikAllSoln(wrist_frame, msg.position[17], &all_soln);
+    ik_solver.ikAllSolnRightArm(wrist_frame, msg.position[17], &all_soln);
     BodyPose bp;
     bp.x = 0; bp.y = 0; bp.z = 0; bp.theta = 0;
 
@@ -87,8 +87,8 @@ void run_ik(const sensor_msgs::JointState& msg){
     //    std::cin >> shit;
     //}
 
-    if (ik_solver.ik(wrist_frame, msg.position[17], &ik_angles)){
-        obj_frame = ik_solver.getKDLObjectState(ik_angles);
+    if (ik_solver.ikRightArm(wrist_frame, msg.position[17], &ik_angles)){
+        obj_frame = ik_solver.fkRightArm(ik_angles);
         obj_frame.M.GetRPY(roll, pitch, yaw);
         ROS_INFO("computed obj_frame %f %f %f %f %f %f", obj_frame.p.x(), obj_frame.p.y(), obj_frame.p.z(), roll, pitch, yaw);
         ROS_INFO("successful angle %f %f %f %f %f %f %f",

@@ -20,7 +20,7 @@
 #define IKFAST_NAMESPACE ik_pr2_rightarm
 #define IKFAST_HAS_LIBRARY
 
-#include <ikfast_pr2/ikfast.h> // found inside share/openrave-X.Y/python/ikfast.h
+#include <ikfast_pr2/ikfast_right.h> // found inside share/openrave-X.Y/python/ikfast.h
 using namespace ikfast;
 
 // check if the included ikfast version matches what this file was compiled with

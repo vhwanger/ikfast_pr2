@@ -10,6 +10,7 @@ include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 #set(ROS_BUILD_TYPE RelWithDebInfo)
 
 add_definitions(-DUSE_HARD_JOINT_LIMITS=1)
+add_definitions(-DIKFAST_NO_MAIN=1)
 #add_definitions(-DUSE_SOFT_JOINT_LIMITS=1)
 
 rosbuild_init()
@@ -25,11 +26,9 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #rosbuild_gensrv()
 
 #common commands for building c++ executables and libraries
-rosbuild_add_library(${PROJECT_NAME} 
-                                    #src/ik_pr2_rightarm.cpp
-                                    src/ikfast61.Transform6D.27_28_30_31_32_33_f29.cpp
-                                    #src/ik_right.cpp
-                                    src/arm.cpp
+rosbuild_add_library(${PROJECT_NAME} src/ikfast61.Transform6D.27_28_30_31_32_33_f29.cpp
+                                     src/ikfast61.Transform6D.15_16_18_19_20_21_f17.cpp
+                                     src/arm.cpp
                                      src/ik_interface.cpp)
 #target_link_libraries(${PROJECT_NAME} another_library)
 rosbuild_add_boost_directories()
@@ -47,3 +46,6 @@ target_link_libraries(move_arm_test ${PROJECT_NAME})
 
 rosbuild_add_executable(comparison src/comparison.cpp)
 target_link_libraries(comparison ${PROJECT_NAME})
+
+rosbuild_add_executable(comparison_left src/comparison_left.cpp)
+target_link_libraries(comparison_left ${PROJECT_NAME})

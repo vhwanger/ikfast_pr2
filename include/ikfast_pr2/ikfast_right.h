@@ -34,6 +34,7 @@
 #include <list>
 #include <stdexcept>
 #define IKFAST_HAS_LIBRARY 
+#undef IKFAST_NAMESPACE
 #define IKFAST_NAMESPACE ik_pr2_rightarm
 
 #ifndef IKFAST_HEADER_COMMON

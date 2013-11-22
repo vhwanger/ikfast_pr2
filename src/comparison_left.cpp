@@ -1,24 +1,24 @@
-#include <ikfast_pr2/comparison.h>
+#include <ikfast_pr2/comparison_left.h>
 
 using namespace std;
 
 
-Tester::Tester():arm("right"),counter(0),kdl_c(0),ikfast_c(0),ikfast_time(0){ arm.setReferenceFrame("/torso_lift_link");}
+Tester::Tester():arm("left"),counter(0),kdl_c(0),ikfast_c(0),ikfast_time(0){ arm.setReferenceFrame("/torso_lift_link");}
 
 void Tester::run_ik(const sensor_msgs::JointState& msg){
     std::vector<double> angles;
-    angles.push_back(msg.position[18]);
-    angles.push_back(msg.position[19]);
-    angles.push_back(msg.position[17]);
-    angles.push_back(msg.position[21]);
-    angles.push_back(msg.position[20]);
-    angles.push_back(msg.position[22]);
-    angles.push_back(msg.position[23]);
+    angles.push_back(msg.position[32]);
+    angles.push_back(msg.position[33]);
+    angles.push_back(msg.position[31]);
+    angles.push_back(msg.position[35]);
+    angles.push_back(msg.position[34]);
+    angles.push_back(msg.position[36]);
+    angles.push_back(msg.position[37]);
 
     tf::StampedTransform fk_transform;
     KDL::Frame wrist_frame;
-    listener.waitForTransform("/torso_lift_link", "/r_wrist_roll_link", ros::Time(0), ros::Duration(10));
-    listener.lookupTransform("/torso_lift_link", "/r_wrist_roll_link", ros::Time(0), fk_transform);
+    listener.waitForTransform("/torso_lift_link", "/l_wrist_roll_link", ros::Time(0), ros::Duration(10));
+    listener.lookupTransform("/torso_lift_link", "/l_wrist_roll_link", ros::Time(0), fk_transform);
     tf::transformTFToKDL(fk_transform, wrist_frame);
 
     double wroll, wpitch, wyaw;
@@ -30,13 +30,13 @@ void Tester::run_ik(const sensor_msgs::JointState& msg){
     struct timeval tv_a;
     gettimeofday(&tv_b, NULL);
     double before = tv_b.tv_usec + (tv_b.tv_sec * 1000);
-    bool fastik_success = ik_solver.ikRightArm(wrist_frame, msg.position[17], &ik_angles);
+    bool fastik_success = ik_solver.ikLeftArm(wrist_frame, msg.position[17], &ik_angles);
     gettimeofday(&tv_a, NULL);
     double after = tv_a.tv_usec + (tv_a.tv_sec * 1000);
     ikfast_time += after - before;
 
     if (fastik_success){
-        KDL::Frame obj_frame = ik_solver.fkRightArm(ik_angles);
+        KDL::Frame obj_frame = ik_solver.fkLeftArm(ik_angles);
         double roll, pitch, yaw;
         obj_frame.M.GetRPY(roll, pitch, yaw);
         assert(fabs(wrist_frame.p.x()-obj_frame.p.x()) < .001);
