@@ -411,7 +411,6 @@ bool Arm::performFK(std::vector<double> jnt_pos, std::vector<double> &cart_pose)
 //    ROS_ERROR("Could not call query service");
 //    return false;
 //  }
-	ROS_INFO("Started Forward Kinematics.");
 	ros::service::waitForService(fk_service_name_);
   ros::ServiceClient fk_client = nh_.serviceClient<kinematics_msgs::GetPositionFK>(fk_service_name_,true);
 
@@ -443,16 +442,6 @@ bool Arm::performFK(std::vector<double> jnt_pos, std::vector<double> &cart_pose)
     	cart_pose.push_back(fk_response.pose_stamped[0].pose.orientation.y);
     	cart_pose.push_back(fk_response.pose_stamped[0].pose.orientation.z);
     	cart_pose.push_back(fk_response.pose_stamped[0].pose.orientation.w);
-			ROS_INFO_STREAM("Link    : " << fk_response.fk_link_names[0].c_str());
-			ROS_INFO_STREAM("Position: " <<
-				fk_response.pose_stamped[0].pose.position.x << "," <<
-				fk_response.pose_stamped[0].pose.position.y << "," <<
-				fk_response.pose_stamped[0].pose.position.z);
-			ROS_INFO("Orientation: %f %f %f %f",
-				fk_response.pose_stamped[0].pose.orientation.x,
-				fk_response.pose_stamped[0].pose.orientation.y,
-				fk_response.pose_stamped[0].pose.orientation.z,
-				fk_response.pose_stamped[0].pose.orientation.w);
     }
     else
     {
@@ -466,7 +455,6 @@ bool Arm::performFK(std::vector<double> jnt_pos, std::vector<double> &cart_pose)
     return false;
   }
 
-  ROS_INFO("Stopped Forward Kinematics.");
 	return true;
 }
 
