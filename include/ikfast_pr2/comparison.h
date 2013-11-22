@@ -20,10 +20,10 @@ class Tester {
         int counter;
         int kdl_c;
         int ikfast_c;
-        double ikfast_time;
+        int ikfast_time;
         tf::TransformListener listener;
-        double kdl_time;
+        int kdl_time;
 
-        double kdl_fk;
-        double ikfast_fk;
+        int kdl_fk;
+        int ikfast_fk;
 };

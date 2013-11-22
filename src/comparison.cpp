@@ -92,8 +92,8 @@ void Tester::run_ik(const sensor_msgs::JointState& msg){
     counter++;
     if (counter == 1000){
         ROS_INFO("kdl: %d, fastik %d", kdl_c, ikfast_c);
-        ROS_INFO("kdl: %f, fastik %f", kdl_time, ikfast_time);
-        ROS_INFO("kdl fk: %f, fastik fk %f", kdl_fk, ikfast_fk);
+        ROS_INFO("kdl: %d, fastik %d", kdl_time, ikfast_time);
+        ROS_INFO("kdl fk: %d, fastik fk %d", kdl_fk, ikfast_fk);
         exit(0);
     }
 }
