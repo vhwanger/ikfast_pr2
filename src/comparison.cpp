@@ -3,7 +3,7 @@
 using namespace std;
 
 
-Tester::Tester():arm("right"),counter(0),kdl_c(0),ikfast_c(0){ arm.setReferenceFrame("/torso_lift_link");}
+Tester::Tester():arm("right"),counter(0),kdl_c(0),ikfast_c(0),ikfast_time(0){ arm.setReferenceFrame("/torso_lift_link");}
 
 void Tester::run_ik(const sensor_msgs::JointState& msg){
     std::vector<double> angles;
@@ -34,7 +34,21 @@ void Tester::run_ik(const sensor_msgs::JointState& msg){
 
     vector<double> ik_angles;
     vector<double> kdl_angles(7,0);
+    struct timeval tv_b;
+    struct timeval tv_a;
+    gettimeofday(&tv_b, NULL);
+    double before = tv_b.tv_usec + (tv_b.tv_sec * 1000);
     bool fastik_success = ik_solver.ik(wrist_frame, msg.position[17], &ik_angles);
+    gettimeofday(&tv_a, NULL);
+    double after = tv_a.tv_usec + (tv_a.tv_sec * 1000);
+    ikfast_time += after - before;
+
+
+    /* Convert from micro seconds (10^-6) to milliseconds (10^-3) */
+
+    /* Adds the seconds (10^0) after converting them to milliseconds
+     * (10^-3) */
+
 
     if (fastik_success){
         KDL::Frame obj_frame = ik_solver.getKDLObjectState(ik_angles);
@@ -52,7 +66,13 @@ void Tester::run_ik(const sensor_msgs::JointState& msg){
     }
 
 
+    gettimeofday(&tv_b, NULL);
+    before = tv_b.tv_usec + (tv_b.tv_sec * 1000);
     bool kdl_success = arm.computeIK(pose, angles, kdl_angles);
+    gettimeofday(&tv_a, NULL);
+    after = tv_a.tv_usec + (tv_a.tv_sec * 1000);
+    kdl_time += after - before;
+
     if (kdl_success){
         kdl_c++;
     }
@@ -64,6 +84,7 @@ void Tester::run_ik(const sensor_msgs::JointState& msg){
     counter++;
     if (counter == 1000){
         ROS_INFO("kdl: %d, fastik %d", kdl_c, ikfast_c);
+        ROS_INFO("kdl: %f, fastik %f", kdl_time, ikfast_time);
         sleep(100);
     }
 }

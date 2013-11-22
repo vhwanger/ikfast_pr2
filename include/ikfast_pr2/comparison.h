@@ -20,5 +20,7 @@ class Tester {
         int counter;
         int ikfast_c;
         int kdl_c;
+        double kdl_time;
+        double ikfast_time;
         Arm arm;
 };
