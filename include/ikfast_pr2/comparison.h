@@ -16,11 +16,11 @@ class Tester {
         void run_ik(const sensor_msgs::JointState& msg);
     private:
         IKFastPR2 ik_solver;
-        tf::TransformListener listener;
-        int counter;
-        int ikfast_c;
-        int kdl_c;
-        double kdl_time;
-        double ikfast_time;
         Arm arm;
+        int counter;
+        int kdl_c;
+        int ikfast_c;
+        double ikfast_time;
+        tf::TransformListener listener;
+        double kdl_time;
 };

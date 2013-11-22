@@ -19,16 +19,8 @@ void Tester::run_ik(const sensor_msgs::JointState& msg){
     KDL::Frame wrist_frame;
     listener.waitForTransform("/torso_lift_link", "/r_wrist_roll_link", ros::Time(0), ros::Duration(10));
     listener.lookupTransform("/torso_lift_link", "/r_wrist_roll_link", ros::Time(0), fk_transform);
-    tf::TransformTFToKDL(fk_transform, wrist_frame);
+    tf::transformTFToKDL(fk_transform, wrist_frame);
 
-    geometry_msgs::Pose pose;
-    pose.position.x = wrist_frame.p.x();
-    pose.position.y = wrist_frame.p.y();
-    pose.position.z = wrist_frame.p.z();
-    wrist_frame.M.GetQuaternion(pose.orientation.x,
-                                pose.orientation.y,
-                                pose.orientation.z,
-                                pose.orientation.w);
     double wroll, wpitch, wyaw;
     wrist_frame.M.GetRPY(wroll, wpitch, wyaw);
 
@@ -42,13 +34,6 @@ void Tester::run_ik(const sensor_msgs::JointState& msg){
     gettimeofday(&tv_a, NULL);
     double after = tv_a.tv_usec + (tv_a.tv_sec * 1000);
     ikfast_time += after - before;
-
-
-    /* Convert from micro seconds (10^-6) to milliseconds (10^-3) */
-
-    /* Adds the seconds (10^0) after converting them to milliseconds
-     * (10^-3) */
-
 
     if (fastik_success){
         KDL::Frame obj_frame = ik_solver.getKDLObjectState(ik_angles);
@@ -68,6 +53,14 @@ void Tester::run_ik(const sensor_msgs::JointState& msg){
 
     gettimeofday(&tv_b, NULL);
     before = tv_b.tv_usec + (tv_b.tv_sec * 1000);
+    geometry_msgs::Pose pose;
+    pose.position.x = wrist_frame.p.x();
+    pose.position.y = wrist_frame.p.y();
+    pose.position.z = wrist_frame.p.z();
+    wrist_frame.M.GetQuaternion(pose.orientation.x,
+                                pose.orientation.y,
+                                pose.orientation.z,
+                                pose.orientation.w);
     bool kdl_success = arm.computeIK(pose, angles, kdl_angles);
     gettimeofday(&tv_a, NULL);
     after = tv_a.tv_usec + (tv_a.tv_sec * 1000);
@@ -79,7 +72,6 @@ void Tester::run_ik(const sensor_msgs::JointState& msg){
     sleep(.1);
 
     ROS_INFO("%d: kdl %d      fast_ik %d", counter, kdl_success, fastik_success);
-
 
     counter++;
     if (counter == 1000){

@@ -50,7 +50,7 @@ void run_ik(const sensor_msgs::JointState& msg){
     tf::TransformListener listener;
     listener.waitForTransform("/torso_lift_link", "/r_wrist_roll_link", ros::Time(0), ros::Duration(10));
     listener.lookupTransform("/torso_lift_link", "/r_wrist_roll_link", ros::Time(0), fk_transform);
-    tf::TransformTFToKDL(fk_transform, wrist_frame);
+    tf::transformTFToKDL(fk_transform, wrist_frame);
 
 
     double roll2, pitch2, yaw2;
