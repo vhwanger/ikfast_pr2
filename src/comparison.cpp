@@ -33,7 +33,7 @@ void Tester::run_ik(const sensor_msgs::JointState& msg){
     wrist_frame.M.GetRPY(wroll, wpitch, wyaw);
 
     vector<double> ik_angles;
-    vector<double> kdl_angles;
+    vector<double> kdl_angles(7,0);
     bool fastik_success = ik_solver.ik(wrist_frame, msg.position[17], &ik_angles);
 
     if (fastik_success){
@@ -62,6 +62,7 @@ int main(int argc, char** argv){
     ros::NodeHandle nh;
     Tester tester;
     ros::Subscriber sub = nh.subscribe("/joint_states", 1, &Tester::run_ik, &tester);
+    sleep(1);
     ros::spin();
     return 0;
 }
