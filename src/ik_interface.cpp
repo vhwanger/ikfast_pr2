@@ -80,29 +80,25 @@ bool IKFastPR2::ikAllSoln(const KDL::Frame& wrist_frame, double free_angle,
         for( std::size_t j = 0; j < solvalues.size(); ++j){
             soln.push_back(solvalues[j]);
         }
-        if (soln[0] > -2.28540394 && soln[0] < 0.71460237 &&
-            soln[1] > -0.52360052 && soln[1] < 1.39630005 &&
-            soln[2] > -3.90000803 && soln[2] < 0.79999959 &&
-            soln[3] > -2.32130536 && soln[3] < 0 &&
-            soln[5] > -2.1800035 && soln[5] < 0){
-            soln_list->push_back(soln);
-            for( std::size_t j = 0; j < solvalues.size(); ++j){
-            }
-        }
+        // Hard limits
+        //if (soln[0] > -2.28540394 && soln[0] < 0.71460237 &&
+        //    soln[1] > -0.52360052 && soln[1] < 1.39630005 &&
+        //    soln[2] > -3.90000803 && soln[2] < 0.79999959 &&
+        //    soln[3] > -2.32130536 && soln[3] < 0 &&
+        //    soln[5] > -2.1800035 && soln[5] < 0){
+        //    soln_list->push_back(soln);
+        //}
 
         // Soft joint limits - this causes ik to fail a lot more, but i'll leave
         // it here just cause.
         //
-        // if (soln[0] > -2.1353981634 && soln[0] < 0.564601836603 &&
-        //     soln[1] > -.3536 && soln[1] < 1.2963 &&
-        //     soln[2] > -3.75 && soln[2] < .65 &&
-        //     soln[3] > -2.1213 && soln[3] < -.15 &&
-        //     soln[5] > -2 && soln[5] < -.1){
-        //     soln_list->push_back(soln);
-        //     for( std::size_t j = 0; j < solvalues.size(); ++j){
-        //         printf("%f ", solvalues[j]);
-        //     }
-        // }
+        if (soln[0] > -2.1353981634 && soln[0] < 0.564601836603 &&
+            soln[1] > -.3536 && soln[1] < 1.2963 &&
+            soln[2] > -3.75 && soln[2] < .65 &&
+            soln[3] > -2.1213 && soln[3] < -.15 &&
+            soln[5] > -2 && soln[5] < -.1){
+            soln_list->push_back(soln);
+        }
     }
     if (!soln_list->size()){
         return false;
