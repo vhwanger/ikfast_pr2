@@ -7,7 +7,7 @@ Tester::Tester():counter(0),kdl_c(0),
                  ikfast_fk(0){ 
 
 
-    FILE* fp_arm= fopen("/home/victor/ros/mpp_groovy/mpp/monolithic_pr2_planner/config/pr2_right_arm.cfg", "r");
+    FILE* fp_arm= fopen("pr2_right_arm.cfg", "r");
     if (!fp_arm){ ROS_ERROR("Couldn't open right arm model file"); }
     m_arm_model = boost::make_shared<sbpl_arm_planner::SBPLArmModel>(fp_arm);
     m_arm_model->setResolution(.02);
