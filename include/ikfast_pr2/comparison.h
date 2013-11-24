@@ -9,6 +9,7 @@
 #include <tf_conversions/tf_kdl.h>
 #include <ikfast_pr2/arm.h>
 #include <angles/angles.h>
+#include <pr2_collision_checker/sbpl_arm_model.h>
 
 class Tester {
     public:
@@ -21,10 +22,10 @@ class Tester {
 
 
         IKFastPR2 ik_solver;
-        Arm arm;
         int counter;
         int kdl_c;
         int ikfast_c;
+        boost::shared_ptr<sbpl_arm_planner::SBPLArmModel> m_arm_model;
         tf::TransformListener listener;
         unsigned long int ikfast_time;
         unsigned long int kdl_time;

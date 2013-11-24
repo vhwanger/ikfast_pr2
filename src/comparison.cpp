@@ -2,10 +2,17 @@
 
 using namespace std;
 
-Tester::Tester():arm("right"),counter(0),kdl_c(0),
+Tester::Tester():counter(0),kdl_c(0),
                  ikfast_c(0),ikfast_time(0), kdl_fk(0), 
                  ikfast_fk(0){ 
-     arm.setReferenceFrame("/torso_lift_link");
+
+
+    FILE* fp_arm= fopen("/home/victor/ros/mpp_groovy/mpp/monolithic_pr2_planner/config/pr2_right_arm.cfg", "r");
+    if (!fp_arm){ ROS_ERROR("Couldn't open right arm model file"); }
+    m_arm_model = boost::make_shared<sbpl_arm_planner::SBPLArmModel>(fp_arm);
+    m_arm_model->setResolution(.02);
+    ROS_INFO("getting kdl chain from paramserver");
+    m_arm_model->initKDLChainFromParamServer();
 }
 
 bool Tester::run_ikfast_test(const KDL::Frame& wrist_frame,
@@ -63,15 +70,18 @@ bool Tester::run_kdl_test(const KDL::Frame& wrist_frame,
     struct timeval tv_b;
     struct timeval tv_a;
     double before, after;
+    vector<double> kdl_angles(7,0);
     gettimeofday(&tv_b, NULL);
     before = tv_b.tv_usec + (tv_b.tv_sec * 1000000);
-    vector<double> kdl_angles(7,0);
-    bool kdl_success = arm.computeIK(pose, seed_angles, kdl_angles);
+    bool ik_success = m_arm_model->computeFastIK(wrist_frame, seed_angles, kdl_angles);
+    if (!ik_success){
+        ik_success = m_arm_model->computeIK(wrist_frame, seed_angles, kdl_angles);
+    }
     gettimeofday(&tv_a, NULL);
     after = tv_a.tv_usec + (tv_a.tv_sec * 1000000);
     kdl_time += after - before;
 
-    if (kdl_success){
+    if (ik_success){
         kdl_c++;
     }
     sleep(.1);
@@ -79,11 +89,10 @@ bool Tester::run_kdl_test(const KDL::Frame& wrist_frame,
     vector<double> temp_pose(6,0);
     gettimeofday(&tv_b, NULL);
     before = tv_b.tv_usec + (tv_b.tv_sec * 1000000);
-    arm.performFK(seed_angles, temp_pose);
     gettimeofday(&tv_a, NULL);
     after = tv_a.tv_usec + (tv_a.tv_sec * 1000000);
     kdl_fk += after - before;
-    return kdl_success;
+    return ik_success;
 }
 
 

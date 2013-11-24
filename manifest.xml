@@ -16,6 +16,7 @@
   <depend package="angles" />
   <depend package="pr2_controllers_msgs" />
   <depend package="sensor_msgs" />
+  <depend package="pr2_collision_checker" />
   <depend package="tf" />
   <export>
       <cpp cflags="-I${prefix}/include -O3 -g" lflags="-L${prefix}/lib -likfast_pr2"/>

@@ -1,6 +1,3 @@
-/*
- *
- */
 #pragma once
 #include <kdl/frames.hpp>
 #include <vector>
