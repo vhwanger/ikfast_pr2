@@ -87,9 +87,11 @@ bool Tester::run_kdl_test(const KDL::Frame& wrist_frame,
     sleep(.1);
 
     vector<double> temp_pose(6,0);
+    KDL::Frame towrist;
     gettimeofday(&tv_b, NULL);
     before = tv_b.tv_usec + (tv_b.tv_sec * 1000000);
     gettimeofday(&tv_a, NULL);
+    m_arm_model->computeArmFK(kdl_angles, 10, &towrist);
     after = tv_a.tv_usec + (tv_a.tv_sec * 1000000);
     kdl_fk += after - before;
     return ik_success;
