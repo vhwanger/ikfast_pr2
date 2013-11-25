@@ -28,7 +28,6 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #common commands for building c++ executables and libraries
 rosbuild_add_library(${PROJECT_NAME} src/ikfast61.Transform6D.27_28_30_31_32_33_f29.cpp
                                      src/ikfast61.Transform6D.15_16_18_19_20_21_f17.cpp
-                                     src/arm.cpp
                                      src/ik_interface.cpp)
 #target_link_libraries(${PROJECT_NAME} another_library)
 rosbuild_add_boost_directories()
@@ -41,11 +40,3 @@ rosbuild_link_boost(${PROJECT_NAME} thread)
 #rosbuild_add_executable(computeIK src/computeIK.cpp)
 #target_link_libraries(computeIK ${PROJECT_NAME})
 #
-rosbuild_add_executable(move_arm_test src/move_arm_test.cpp)
-target_link_libraries(move_arm_test ${PROJECT_NAME})
-
-rosbuild_add_executable(comparison src/comparison.cpp)
-target_link_libraries(comparison ${PROJECT_NAME})
-
-rosbuild_add_executable(comparison_left src/comparison_left.cpp)
-target_link_libraries(comparison_left ${PROJECT_NAME})

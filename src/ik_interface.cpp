@@ -1,6 +1,5 @@
 #include <ikfast_pr2/ik_interface.h>
 #include <angles/angles.h>
-#include <boost/foreach.hpp>
 #include <iostream>
 #include <stdio.h>
 
