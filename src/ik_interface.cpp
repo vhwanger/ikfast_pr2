@@ -2,6 +2,7 @@
 #include <angles/angles.h>
 #include <iostream>
 #include <stdio.h>
+#include <sys/time.h>
 
 using namespace KDL;
 using namespace std;
@@ -63,8 +64,17 @@ bool IKFastPR2::ikAllSolnRightArm(const KDL::Frame& wrist_frame, double free_ang
 
     IkSolutionList<ik_pr2_rightarm::IkReal> solutions;
     std::vector<ik_pr2_rightarm::IkReal> vfree(ik_pr2_rightarm::GetNumFreeParameters(), free_angle);
+    struct timeval tv_b;
+    struct timeval tv_a;
+    gettimeofday(&tv_b, NULL);
+    long unsigned int before = tv_b.tv_usec + (tv_b.tv_sec * 1000000);
+
     bool ik_success = ik_pr2_rightarm::ComputeIk(eetrans, eerot, &vfree[0], 
                                               solutions);
+    gettimeofday(&tv_a, NULL);
+    long unsigned int after = tv_a.tv_usec + (tv_a.tv_sec * 1000000);
+    long unsigned int ikfast_time = after - before;
+    printf("\ncompute IK is %lu\n", ikfast_time);
     if (!ik_success){
         return false;
     }
@@ -107,14 +117,31 @@ bool IKFastPR2::ikAllSolnRightArm(const KDL::Frame& wrist_frame, double free_ang
     return true;
 }
 
-bool IKFastPR2::ikRightArm(const Frame& wrist_frame, double free_angle, vector<double>* angles){
+bool IKFastPR2::ikRightArm(const Frame& wrist_frame, 
+                           double free_angle, 
+                           vector<double>* angles,
+                           bool search_free_angle/*=false*/){
     std::vector<std::vector<double> > all_soln;
     if (ikAllSolnRightArm(wrist_frame, free_angle, &all_soln)){
         *angles = all_soln[0];
         return true;
-    } else {
-        return false;
+    // if we want to search over all free angles, let's check angles closest to
+    // the given free angle first
+    } else if (search_free_angle){
+        for (int del_angle=1; del_angle < 180; del_angle++){
+            double next_angle = angles::normalize_angle(free_angle + (M_PI/180)*del_angle);
+            if (ikAllSolnRightArm(wrist_frame, next_angle, &all_soln)){
+                *angles = all_soln[0];
+                return true;
+            }
+            next_angle = angles::normalize_angle(free_angle - (M_PI/180)*del_angle);
+            if (ikAllSolnRightArm(wrist_frame, next_angle, &all_soln)){
+                *angles = all_soln[0];
+                return true;
+            }
+        }
     }
+    return false;
 }
 
 KDL::Frame IKFastPR2::fkRightArm(const vector<double> arm_angles){
@@ -219,16 +246,16 @@ bool IKFastPR2::ikAllSolnLeftArm(const KDL::Frame& wrist_frame,
         }
 #endif
 
+#ifdef USE_SOFT_JOINT_LIMITS
         // Soft joint limits - this causes ik to fail a lot more, but i'll leave
         // it here just cause.
-#ifdef USE_SOFT_JOINT_LIMITS
-        //if (soln[0] > -2.1353981634 && soln[0] < 0.564601836603 &&
-        //    soln[1] > -.3536 && soln[1] < 1.2963 &&
-        //    soln[2] > -3.75 && soln[2] < .65 &&
-        //    soln[3] > -2.1213 && soln[3] < -.15 &&
-        //    soln[5] > -2 && soln[5] < -.1){
-        //    soln_list->push_back(soln);
-        //}
+        if (soln[0] > -0.564601836603 && soln[0] < 2.1353981634 &&
+            soln[1] > -.3536 && soln[1] < 1.2963 &&
+            soln[2] > -0.65 && soln[2] < 3.75 &&
+            soln[3] > -2.1213 && soln[3] < -.15 &&
+            soln[5] > -2 && soln[5] < -.1){
+            soln_list->push_back(soln);
+        }
 #endif
     }
     if (!soln_list->size()){
@@ -237,14 +264,30 @@ bool IKFastPR2::ikAllSolnLeftArm(const KDL::Frame& wrist_frame,
     return true;
 }
 
-bool IKFastPR2::ikLeftArm(const Frame& wrist_frame, double free_angle, vector<double>* angles){
+bool IKFastPR2::ikLeftArm(const Frame& wrist_frame, double free_angle, 
+                          vector<double>* angles, 
+                          bool search_free_angle/*=false*/){
     std::vector<std::vector<double> > all_soln;
     if (ikAllSolnLeftArm(wrist_frame, free_angle, &all_soln)){
         *angles = all_soln[0];
         return true;
-    } else {
-        return false;
+    // if we want to search over all free angles, let's check angles closest to
+    // the given free angle first
+    } else if (search_free_angle){
+        for (int del_angle=1; del_angle < 180; del_angle++){
+            double next_angle = angles::normalize_angle(free_angle + (M_PI/180)*del_angle);
+            if (ikAllSolnLeftArm(wrist_frame, next_angle, &all_soln)){
+                *angles = all_soln[0];
+                return true;
+            }
+            next_angle = angles::normalize_angle(free_angle - (M_PI/180)*del_angle);
+            if (ikAllSolnLeftArm(wrist_frame, next_angle, &all_soln)){
+                *angles = all_soln[0];
+                return true;
+            }
+        }
     }
+    return false;
 }
 
 KDL::Frame IKFastPR2::fkLeftArm(const vector<double> arm_angles){
