@@ -74,7 +74,6 @@ bool IKFastPR2::ikAllSolnRightArm(const KDL::Frame& wrist_frame, double free_ang
     gettimeofday(&tv_a, NULL);
     long unsigned int after = tv_a.tv_usec + (tv_a.tv_sec * 1000000);
     long unsigned int ikfast_time = after - before;
-    printf("\ncompute IK is %lu\n", ikfast_time);
     if (!ik_success){
         return false;
     }
@@ -267,6 +266,7 @@ bool IKFastPR2::ikAllSolnLeftArm(const KDL::Frame& wrist_frame,
 bool IKFastPR2::ikLeftArm(const Frame& wrist_frame, double free_angle, 
                           vector<double>* angles, 
                           bool search_free_angle/*=false*/){
+
     std::vector<std::vector<double> > all_soln;
     if (ikAllSolnLeftArm(wrist_frame, free_angle, &all_soln)){
         *angles = all_soln[0];
