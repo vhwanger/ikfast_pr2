@@ -9,7 +9,7 @@ To use the solver, instantiate an object
 
        IKFastPR2 solver;
 
-These are the functions you'll probably end up using:
+These are the member functions of the class you'll end up using:
 
         bool ikRightArm(const KDL::Frame& wrist_frame,
                         double free_angle,
