@@ -16,8 +16,8 @@ class IKFastPR2 {
                        std::vector<double>* angles,
                         bool search_free_angle=false);
 
-        KDL::Frame fkRightArm(const std::vector<double> arm_angles);
-        KDL::Frame fkLeftArm(const std::vector<double> arm_angles);
+        KDL::Frame fkRightArm(const std::vector<double>& arm_angles);
+        KDL::Frame fkLeftArm(const std::vector<double>& arm_angles);
 
         bool ikAllSolnRightArm(const KDL::Frame&, double free_angle, 
                                   std::vector<std::vector<double> >* all_soln);

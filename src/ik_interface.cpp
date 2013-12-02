@@ -64,16 +64,9 @@ bool IKFastPR2::ikAllSolnRightArm(const KDL::Frame& wrist_frame, double free_ang
 
     IkSolutionList<ik_pr2_rightarm::IkReal> solutions;
     std::vector<ik_pr2_rightarm::IkReal> vfree(ik_pr2_rightarm::GetNumFreeParameters(), free_angle);
-    struct timeval tv_b;
-    struct timeval tv_a;
-    gettimeofday(&tv_b, NULL);
-    long unsigned int before = tv_b.tv_usec + (tv_b.tv_sec * 1000000);
 
     bool ik_success = ik_pr2_rightarm::ComputeIk(eetrans, eerot, &vfree[0], 
                                               solutions);
-    gettimeofday(&tv_a, NULL);
-    long unsigned int after = tv_a.tv_usec + (tv_a.tv_sec * 1000000);
-    long unsigned int ikfast_time = after - before;
     if (!ik_success){
         return false;
     }
@@ -143,7 +136,7 @@ bool IKFastPR2::ikRightArm(const Frame& wrist_frame,
     return false;
 }
 
-KDL::Frame IKFastPR2::fkRightArm(const vector<double> arm_angles){
+KDL::Frame IKFastPR2::fkRightArm(const vector<double>& arm_angles){
     vector<ik_pr2_rightarm::IkReal> IkReal_angles(arm_angles.begin(), arm_angles.end());
     ik_pr2_rightarm::IkReal eetrans[3], eerot[ROT_DATA_SIZE];
     ik_pr2_rightarm::ComputeFk(&IkReal_angles[0], eetrans, eerot);
@@ -290,7 +283,7 @@ bool IKFastPR2::ikLeftArm(const Frame& wrist_frame, double free_angle,
     return false;
 }
 
-KDL::Frame IKFastPR2::fkLeftArm(const vector<double> arm_angles){
+KDL::Frame IKFastPR2::fkLeftArm(const vector<double>& arm_angles){
     vector<ik_pr2_leftarm::IkReal> IkReal_angles(arm_angles.begin(), arm_angles.end());
     ik_pr2_leftarm::IkReal eetrans[3], eerot[ROT_DATA_SIZE];
     ik_pr2_leftarm::ComputeFk(&IkReal_angles[0], eetrans, eerot);
