@@ -20,8 +20,8 @@ These are the functions you'll probably end up using:
                        std::vector<double>* angles,
                        bool search_free_angle=false);
 
-        KDL::Frame fkRightArm(const std::vector<double> arm_angles);
-        KDL::Frame fkLeftArm(const std::vector<double> arm_angles);
+        KDL::Frame fkRightArm(const std::vector<double>& arm_angles);
+        KDL::Frame fkLeftArm(const std::vector<double>& arm_angles);
 
 The inverse kinematic functions require you to specify a free_angle corresponding to the upper arm roll angle. The search_free_angle parameter specifies whether to try and find any free angle that returns a solution. It searches using the specified free angle, then tries +/- .01 radians, and continues until it tries all angles. It then returns a solution to the angles vector.
 
